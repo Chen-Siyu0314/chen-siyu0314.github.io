@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>我的自我介紹</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+  <div id="particles-js"></div>
+  <div class="theme-switch">
+    <i class="fas fa-moon"></i>
+    <label class="switch">
+      <input type="checkbox" id="darkModeToggle">
+      <span class="slider round"></span>
+    </label>
+  </div>
+  <div class="container">
+    <h1 id="name">自我介紹</h1>
+    <div class="intro">
+      <p id="typing-text"></p>
+      <div class="嗨伊~我是陳思宇，是個大學生~">
+        <input type="text" id="visitorName" placeholder="請輸入你的名字">
+        <button onclick="greetVisitor()" class="greeting-btn">
+          <span>打個招呼！</span>
+          <i class="fas fa-hand-wave"></i>
+        </button>
+      </div>
+      <h2>我的興趣：</h2>
+      <ul class="interests">
+        <li><i class="fas fa-gamepad"></i> fps遊戲</li>
+        <li><i class="fas fa-music"></i> 聽音樂</li>
+      </ul>
+    </div>
+    <div class="image-container">
+      <img src="sy.jpg" alt="我的照片" class="profile-image">
+    </div>
+    
+    <div class="portfolio-section">
+      <h2>作品展示</h2>
+      <div class="portfolio-grid">
+        <div class="portfolio-item">
+          <img src="WORK1.jpg" alt="作品1">
+          <h3>專案一</h3>
+          <p>這是我的其中一個小作品，可以偵測人的動作，根據不同的動作用文字顯示出這個人比了甚麼動作，如果是不雅動作會自動打馬賽克</p>
+        </div>
+        <!-- 可以繼續添加更多作品 -->
+      </div>
+    </div>
+
+    <div class="timeline-section">
+      <h2>成長歷程</h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-content">
+            <h3>2022 - 現在</h3>
+            <p>就讀台灣科技大學</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-content">
+            <h3>2019 - 2022</h3>
+            <p>二信高中</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-section">
+      <h2>關於我</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <i class="fas fa-university"></i>
+          <h3>學校</h3>
+          <p>台灣科技大學</p>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-code"></i>
+          <h3>技能</h3>
+          <p>擅長團隊合作、與人溝通</p>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-envelope"></i>
+          <h3>聯絡方式</h3>
+          <p>aaaa87609@gmail.com</p>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-birthday-cake"></i>
+          <h3>生日</h3>
+          <p>2004/03/14</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="social-media">
+      <a href="https://www.instagram.com/sy._0314/" class="social-icon"><i class="fab fa-instagram"></i></a>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
+<div>Teachable Machine Image Model</div>
+<button type="button" onclick="init()">Start</button>
+<div id="webcam-container"></div>
+<div id="label-container"></div>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+<script type="text/javascript">
+    // More API functions here:
+    // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+
+    // the link to your model provided by Teachable Machine export panel
+    const URL = "https://teachablemachine.withgoogle.com/models/C7sLiL8p0/";
+
+    let model, webcam, labelContainer, maxPredictions;
+
+    // Load the image model and setup the webcam
+    async function init() {
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+
+        // load the model and metadata
+        // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+        // or files from your local hard drive
+        // Note: the pose library adds "tmImage" object to your window (window.tmImage)
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+
+        // Convenience function to setup a webcam
+        const flip = true; // whether to flip the webcam
+        webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
+        await webcam.setup(); // request access to the webcam
+        await webcam.play();
+        window.requestAnimationFrame(loop);
+
+        // append elements to the DOM
+        document.getElementById("webcam-container").appendChild(webcam.canvas);
+        labelContainer = document.getElementById("label-container");
+        for (let i = 0; i < maxPredictions; i++) { // and class labels
+            labelContainer.appendChild(document.createElement("div"));
+        }
+    }
+
+    async function loop() {
+        webcam.update(); // update the webcam frame
+        await predict();
+        window.requestAnimationFrame(loop);
+    }
+
+    // run the webcam image through the image model
+    async function predict() {
+        // predict can take in an image, video or canvas html element
+        const prediction = await model.predict(webcam.canvas);
+        for (let i = 0; i < maxPredictions; i++) {
+            const classPrediction =
+                prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+            labelContainer.childNodes[i].innerHTML = classPrediction;
+        }
+    }
+</script>
