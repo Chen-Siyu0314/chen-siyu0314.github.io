@@ -48,20 +48,26 @@
         </div>
         <!-- 可以繼續添加更多作品 -->
       </div>
-     
       <div class="portfolio-grid">
         <div class="portfolio-item">
           <img src="1.jpg" alt="期末專題">
           <img src="2.jpg" alt="期末專題">
           <img src="3.jpg" alt="期末專題">
-          .container {
+          .portfolio-item {
   display: flex;
-  align-items: flex-start; /* 或 center */
-  gap: 2rem;
+  flex-wrap: wrap;
+  gap: 10px; /* 圖片間距 */
+  justify-content: center;
 }
-.left, .right {
-  flex: 1;
+
+.portfolio-item img {
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
+
       </div>
           <h3>期末專題</h3>
           <p>這是我的其中一個小作品，可以偵測人的動作，根據不同的動作用文字顯示出這個人比了甚麼動作，如果是不雅動作會自動打馬賽克</p>
